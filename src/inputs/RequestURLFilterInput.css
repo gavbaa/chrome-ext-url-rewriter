@@ -1,0 +1,46 @@
+.request-url-filter-input {
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.input-type-selection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.input-type-selection label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-type-selection a {
+  margin-left: 0.5rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.input-type-selection a:hover {
+  text-decoration: underline;
+}
+
+.input-field {
+  margin-bottom: 1rem;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.case-sensitive-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

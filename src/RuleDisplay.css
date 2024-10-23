@@ -1,0 +1,173 @@
+.rule-display {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.rule-display h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.rule-display > div {
+  margin: 0.25rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.rule-display .label {
+  font-weight: bold;
+  color: #555;
+  width: 150px;
+}
+
+.rule-display .value {
+  color: #000;
+}
+
+.rule-display .separator {
+  color: #999;
+}
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  overflow-y: auto;
+}
+
+.dialog-container {
+  min-height: 100vh;
+  padding: 1rem;
+  text-align: center;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.dialog-spacer {
+  display: inline-block;
+  height: 100vh;
+  vertical-align: middle;
+}
+
+.dialog-panel {
+  display: inline-block;
+  width: 100%;
+  max-width: 36rem;
+  padding: 1.5rem;
+  margin: 2rem auto;
+  overflow: hidden;
+  text-align: left;
+  vertical-align: middle;
+  background-color: white;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  transform: translateY(0);
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.dialog-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.dialog-content {
+  margin-top: 1rem;
+}
+
+.dialog-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.dialog-close-button {
+  display: inline-flex;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1d4ed8;
+  background-color: #bfdbfe;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dialog-close-button:hover {
+  background-color: #93c5fd;
+}
+
+.dialog-close-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.menu-button {
+  display: inline-flex;
+  justify-content: center;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  background-color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.menu-button:hover {
+  background-color: #f9fafb;
+}
+
+.menu-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.menu-items {
+  position: absolute;
+  margin-top: 0.5rem;
+  width: 14rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.menu-item {
+  display: flex;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  border: 0px solid black;
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+.menu-item:hover,
+.menu-item:focus {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.menu-item.active {
+  background-color: #f3f4f6;
+  color: #111827;
+}

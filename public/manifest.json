@@ -1,0 +1,12 @@
+{
+  "name": "SQSP Rewriter",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Rewrite requests and headers.",
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["declarativeNetRequest", "declarativeNetRequestFeedback"],
+  "options_ui": {
+    "page": "index.html",
+    "open_in_tab": true
+  }
+}
