@@ -15,45 +15,54 @@ import { ResourceTypesInput } from "./inputs/ResourceTypesInput";
 import { RequestDomainInput } from "./inputs/RequestDomainInput";
 import "./RuleDisplay.css";
 import { EditIcon } from "./EditIcon";
+import { RequestURLFilterInput } from "./inputs/RequestURLFilterInput";
 
 interface RuleDisplayProps {
   rule: DeclarativeNetRequestRule;
+  updateRule: (rule: DeclarativeNetRequestRule) => void;
 }
 
-const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
-  const { id, priority, action, condition } = rule;
+const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [isConditionModalOpen, setIsConditionModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState<string>("");
-  const [currentAction, setCurrentAction] = useState<DnrRuleAction>(action);
-  const [tempCurrentAction, setTempCurrentAction] =
-    useState<DnrRuleAction>(action);
-  const [currentCondition, setCurrentCondition] =
-    useState<DnrRuleCondition>(condition);
+  const [currentRule, setCurrentRule] =
+    useState<DeclarativeNetRequestRule>(rule);
+  const [tempCurrentRule, setTempCurrentRule] =
+    useState<DeclarativeNetRequestRule>(rule);
   const [conditionType, setConditionType] = useState<string>("");
 
   const handleEditActionClick = () => {
-    setTempCurrentAction(currentAction);
+    setTempCurrentRule(currentRule);
     setIsActionModalOpen(true);
   };
 
   const handleActionModalCancel = () => {
-    setTempCurrentAction(currentAction);
+    setTempCurrentRule(currentRule);
     setIsActionModalOpen(false);
   };
 
   const handleActionModalSave = () => {
-    setCurrentAction(tempCurrentAction);
+    setCurrentRule(tempCurrentRule);
+    updateRule(tempCurrentRule);
     setIsActionModalOpen(false);
   };
 
-  const handleConditionModalClose = () => {
+  const handleConditionModalCancel = () => {
+    setTempCurrentRule(currentRule);
+    setIsConditionModalOpen(false);
+  };
+
+  const handleConditionModalSave = () => {
+    setCurrentRule(tempCurrentRule);
+    updateRule(tempCurrentRule);
     setIsConditionModalOpen(false);
   };
 
   const handleConditionSubmit = (newCondition: DnrRuleCondition) => {
-    setCurrentCondition({ ...currentCondition, ...newCondition });
-    setIsConditionModalOpen(false);
+    console.log("handling condition submit", newCondition);
+    const updatedCondition = { ...tempCurrentRule.condition, ...newCondition };
+    setTempCurrentRule({ ...tempCurrentRule, condition: updatedCondition });
   };
 
   const handleConditionEditClick = (type: string) => {
@@ -63,40 +72,81 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
   };
 
   const handleActionRuleInputUpdate = (newAction: DnrRuleAction) => {
-    setTempCurrentAction(newAction);
+    const updatedAction = { ...tempCurrentRule.action, ...newAction };
+    setTempCurrentRule({ ...tempCurrentRule, action: updatedAction });
   };
 
   const renderConditionForm = () => {
     switch (conditionType) {
+      case "URL Matching":
+        return (
+          <RequestURLFilterInput
+            initialCondition={{
+              filterType: currentRule.condition.urlFilter
+                ? "urlFilter"
+                : "regexFilter",
+              filter:
+                currentRule.condition.urlFilter ||
+                currentRule.condition.regexFilter ||
+                "",
+              isCaseSensitive:
+                currentRule.condition.isUrlFilterCaseSensitive || false,
+            }}
+            onChange={(condition) => {
+              if (condition.filterType === "urlFilter") {
+                handleConditionSubmit({
+                  urlFilter: condition.filter,
+                  regexFilter: "",
+                  isUrlFilterCaseSensitive: condition.isCaseSensitive,
+                });
+              } else {
+                handleConditionSubmit({
+                  urlFilter: "",
+                  regexFilter: condition.filter,
+                  isUrlFilterCaseSensitive: condition.isCaseSensitive,
+                });
+              }
+            }}
+          />
+        );
       case "Request Methods":
         return (
           <RequestMethodForm
             initialCondition={{
-              type: currentCondition.excludedRequestMethods?.length
+              type: currentRule.condition.excludedRequestMethods?.length
                 ? "exclude"
                 : "include",
 
-              requestMethods: currentCondition.excludedRequestMethods?.length
-                ? currentCondition.excludedRequestMethods
-                : currentCondition.requestMethods || [],
+              requestMethods: currentRule.condition.excludedRequestMethods
+                ?.length
+                ? currentRule.condition.excludedRequestMethods
+                : currentRule.condition.requestMethods || [],
             }}
-            onSubmit={(condition) =>
-              handleConditionSubmit({
-                requestMethods: condition.requestMethods,
-              })
-            }
+            onChange={(condition) => {
+              if (condition.type === "include") {
+                handleConditionSubmit({
+                  requestMethods: condition.requestMethods,
+                  excludedRequestMethods: [],
+                });
+              } else {
+                handleConditionSubmit({
+                  requestMethods: [],
+                  excludedRequestMethods: condition.requestMethods,
+                });
+              }
+            }}
           />
         );
       case "Resource Types":
         return (
           <ResourceTypesInput
             initialCondition={{
-              type: currentCondition.excludedResourceTypes?.length
+              type: currentRule.condition.excludedResourceTypes?.length
                 ? "exclude"
                 : "include",
-              resourceTypes: currentCondition.excludedResourceTypes?.length
-                ? currentCondition.excludedResourceTypes
-                : currentCondition.resourceTypes || [],
+              resourceTypes: currentRule.condition.excludedResourceTypes?.length
+                ? currentRule.condition.excludedResourceTypes
+                : currentRule.condition.resourceTypes || [],
             }}
             onSubmit={(condition) => {
               if (condition.type === "include") {
@@ -116,7 +166,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
       case "Initiator Domains":
         return (
           <RequestDomainInput
-            initialDomains={currentCondition.initiatorDomains || []}
+            initialDomains={currentRule.condition.initiatorDomains || []}
             onSubmit={(domains: string[]) =>
               handleConditionSubmit({
                 initiatorDomains: domains,
@@ -127,7 +177,9 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
       case "Excluded Initiator Domains":
         return (
           <RequestDomainInput
-            initialDomains={currentCondition.excludedInitiatorDomains || []}
+            initialDomains={
+              currentRule.condition.excludedInitiatorDomains || []
+            }
             onSubmit={(domains: string[]) =>
               handleConditionSubmit({
                 excludedInitiatorDomains: domains,
@@ -138,7 +190,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
       case "Request Domains":
         return (
           <RequestDomainInput
-            initialDomains={currentCondition.requestDomains || []}
+            initialDomains={currentRule.condition.requestDomains || []}
             onSubmit={(domains: string[]) =>
               handleConditionSubmit({
                 requestDomains: domains,
@@ -149,7 +201,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
       case "Excluded Request Domains":
         return (
           <RequestDomainInput
-            initialDomains={currentCondition.excludedRequestDomains || []}
+            initialDomains={currentRule.condition.excludedRequestDomains || []}
             onSubmit={(domains: string[]) =>
               handleConditionSubmit({
                 excludedRequestDomains: domains,
@@ -163,79 +215,87 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
   };
 
   const conditionText = [
-    condition.urlFilter && (
+    currentRule.condition.urlFilter && (
       <span key="urlFilter">
         <span className="label">URL Filter:</span>{" "}
-        <span className="value">{condition.urlFilter}</span>
+        <span className="value">{currentRule.condition.urlFilter}</span>
       </span>
     ),
-    condition.regexFilter && (
+    currentRule.condition.regexFilter && (
       <span key="regexFilter">
         <span className="label">Regex Filter:</span>{" "}
-        <span className="value">{condition.regexFilter}</span>
+        <span className="value">{currentRule.condition.regexFilter}</span>
       </span>
     ),
-    condition.isUrlFilterCaseSensitive !== undefined && (
+    currentRule.condition.isUrlFilterCaseSensitive !== undefined && (
       <span key="isUrlFilterCaseSensitive">
         <span className="label">Case Sensitive:</span>{" "}
         <span className="value">
-          {condition.isUrlFilterCaseSensitive ? "Yes" : "No"}
+          {currentRule.condition.isUrlFilterCaseSensitive ? "Yes" : "No"}
         </span>
       </span>
     ),
-    condition.resourceTypes && (
+    currentRule.condition.resourceTypes?.length && (
       <span key="resourceTypes">
         <span className="label">Resource Types:</span>{" "}
-        <span className="value">{condition.resourceTypes.join(", ")}</span>
+        <span className="value">
+          {currentRule.condition.resourceTypes.join(", ")}
+        </span>
       </span>
     ),
-    condition.excludedResourceTypes && (
+    currentRule.condition.excludedResourceTypes?.length && (
       <span key="excludedResourceTypes">
         <span className="label">Excluded Resource Types:</span>{" "}
         <span className="value">
-          {condition.excludedResourceTypes.join(", ")}
+          {currentRule.condition.excludedResourceTypes.join(", ")}
         </span>
       </span>
     ),
-    condition.requestMethods && (
+    currentRule.condition.requestMethods?.length && (
       <span key="requestMethods">
         <span className="label">Request Methods:</span>{" "}
-        <span className="value">{condition.requestMethods.join(", ")}</span>
+        <span className="value">
+          {currentRule.condition.requestMethods.join(", ")}
+        </span>
       </span>
     ),
-    condition.excludedRequestMethods && (
+    currentRule.condition.excludedRequestMethods?.length && (
       <span key="excludedRequestMethods">
         <span className="label">Excluded Request Methods:</span>{" "}
         <span className="value">
-          {condition.excludedRequestMethods.join(", ")}
+          {currentRule.condition.excludedRequestMethods.join(", ")}
         </span>
       </span>
     ),
-    condition.initiatorDomains && (
+    currentRule.condition.initiatorDomains?.length && (
       <span key="initiatorDomains">
         <span className="label">Initiator Domains:</span>{" "}
-        <span className="value">{condition.initiatorDomains.join(", ")}</span>
+        <span className="value">
+          {currentRule.condition.initiatorDomains.join(", ")}
+        </span>
       </span>
     ),
-    condition.excludedInitiatorDomains && (
+    currentRule.condition.excludedInitiatorDomains?.length && (
       <span key="excludedInitiatorDomains">
         <span className="label">Excluded Initiator Domains:</span>{" "}
         <span className="value">
-          {condition.excludedInitiatorDomains.join(", ")}
+          {currentRule.condition.excludedInitiatorDomains.join(", ")}
         </span>
       </span>
     ),
-    condition.requestDomains && (
+    currentRule.condition.requestDomains?.length && (
       <span key="requestDomains">
         <span className="label">Request Domains:</span>{" "}
-        <span className="value">{condition.requestDomains.join(", ")}</span>
+        <span className="value">
+          {currentRule.condition.requestDomains.join(", ")}
+        </span>
       </span>
     ),
-    condition.excludedRequestDomains && (
+    currentRule.condition.excludedRequestDomains?.length && (
       <span key="excludedRequestDomains">
         <span className="label">Excluded Request Domains:</span>{" "}
         <span className="value">
-          {condition.excludedRequestDomains.join(", ")}
+          {currentRule.condition.excludedRequestDomains.join(", ")}
         </span>
       </span>
     ),
@@ -244,29 +304,31 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
   const actionText = [
     <span key="type">
       <span className="label">Type:</span>{" "}
-      <span className="value">{currentAction.type}</span>
+      <span className="value">{currentRule.action.type}</span>
     </span>,
-    currentAction.type === "redirect" && currentAction.redirect?.url && (
-      <span key="redirectUrl">
-        <span className="label">Redirect URL:</span>{" "}
-        <span className="value">{currentAction.redirect.url}</span>
-      </span>
-    ),
-    currentAction.type === "modifyHeaders" && currentAction.requestHeaders && (
-      <span key="modifyHeaders">
-        <span className="label">Modify Headers:</span>{" "}
-        <span className="value">
-          {currentAction.requestHeaders
-            .map(
-              (header) =>
-                `${header.operation} ${header.header}${
-                  header.value ? `: ${header.value}` : ""
-                }`
-            )
-            .join(", ")}
+    currentRule.action.type === "redirect" &&
+      currentRule.action.redirect?.url && (
+        <span key="redirectUrl">
+          <span className="label">Redirect URL:</span>{" "}
+          <span className="value">{currentRule.action.redirect.url}</span>
         </span>
-      </span>
-    ),
+      ),
+    currentRule.action.type === "modifyHeaders" &&
+      currentRule.action.requestHeaders && (
+        <span key="modifyHeaders">
+          <span className="label">Modify Headers:</span>{" "}
+          <span className="value">
+            {currentRule.action.requestHeaders
+              .map(
+                (header) =>
+                  `${header.operation} ${header.header}${
+                    header.value ? `: ${header.value}` : ""
+                  }`
+              )
+              .join(", ")}
+          </span>
+        </span>
+      ),
   ].filter(Boolean);
 
   return (
@@ -290,6 +352,16 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
             >
               <Menu.Items className="menu-items">
                 <div style={{ paddingTop: "2px", paddingBottom: "2px" }}>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={() => handleConditionEditClick("URL Matching")}
+                        className={`menu-item ${active ? "active" : ""}`}
+                      >
+                        URL Matching
+                      </button>
+                    )}
+                  </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
                       <button
@@ -404,7 +476,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
             <DialogTitle className="dialog-title">Edit Rule Action</DialogTitle>
             <div className="dialog-content">
               <RuleActionInput
-                initialAction={currentAction}
+                initialAction={currentRule.action}
                 onActionChange={handleActionRuleInputUpdate}
               />
             </div>
@@ -427,7 +499,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
       </Dialog>
       <Dialog
         open={isConditionModalOpen}
-        onClose={handleConditionModalClose}
+        onClose={handleConditionModalCancel}
         className="dialog"
       >
         <div className="dialog-backdrop" aria-hidden="true" />
@@ -440,10 +512,16 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule }) => {
             <div className="dialog-content">{renderConditionForm()}</div>
             <div className="dialog-actions">
               <button
-                onClick={handleConditionModalClose}
+                onClick={handleConditionModalCancel}
                 className="dialog-close-button"
               >
-                Close
+                Cancel
+              </button>
+              <button
+                onClick={handleConditionModalSave}
+                className="dialog-close-button"
+              >
+                Save
               </button>
             </div>
           </DialogPanel>

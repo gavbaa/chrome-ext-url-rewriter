@@ -1,25 +1,56 @@
 import React, { useState } from "react";
 import "./RequestURLFilterInput.css";
 
-export const RequestURLFilterInput: React.FC = () => {
-  const [inputType, setInputType] = useState<"urlFilter" | "regexFilter">(
-    "urlFilter"
+type FilterType = "urlFilter" | "regexFilter";
+
+export type URLFilterConditionInput = {
+  filterType: FilterType;
+  filter: string;
+  isCaseSensitive: boolean;
+};
+
+interface RequestURLFilterInputProps {
+  initialCondition: URLFilterConditionInput;
+  onChange: (changed: URLFilterConditionInput) => void;
+}
+
+export const RequestURLFilterInput = ({
+  initialCondition,
+  onChange,
+}: RequestURLFilterInputProps) => {
+  const [inputType, setInputType] = useState<FilterType>(
+    initialCondition.filterType
   );
   const [inputValue, setInputValue] = useState<string>("");
   const [isCaseSensitive, setIsCaseSensitive] = useState<boolean>(false);
 
   const handleInputTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputType(e.target.value as "urlFilter" | "regexFilter");
+    onChange({
+      filterType: e.target.value as "urlFilter" | "regexFilter",
+      filter: inputValue,
+      isCaseSensitive,
+    });
   };
 
   const handleInputValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
+    onChange({
+      filterType: inputType,
+      filter: e.target.value,
+      isCaseSensitive,
+    });
   };
 
   const handleCaseSensitiveChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setIsCaseSensitive(e.target.checked);
+    onChange({
+      filterType: inputType,
+      filter: inputValue,
+      isCaseSensitive: e.target.checked,
+    });
   };
 
   return (

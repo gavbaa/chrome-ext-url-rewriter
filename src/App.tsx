@@ -1,64 +1,62 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { RuleConditionForm } from "./ConditionForm";
-import { RequestMethodForm } from "./inputs/RequestMethodForm";
 import { DeclarativeNetRequestRule } from "./types/DnrRule";
 import RuleDisplay from "./RuleDisplay";
 
-const sampleRule: DeclarativeNetRequestRule = {
-  id: 1,
-  priority: 1,
-  action: {
-    type: "modifyHeaders",
-    requestHeaders: [
-      { header: "X-Custom-Header", operation: "set", value: "value" },
-    ],
-  },
-  condition: {
-    urlFilter: "https://example.com",
-    requestMethods: ["GET"],
-  },
-};
-const sampleRule2: DeclarativeNetRequestRule = {
-  id: 2,
-  priority: 2,
-  action: {
-    type: "block",
-  },
-  condition: {
-    urlFilter: "https://example.com",
-    requestMethods: ["GET", "POST", "HEAD"],
-  },
-};
-
 function App() {
+  const [rules, setRules] = useState<DeclarativeNetRequestRule[]>([]);
+  const getNewRuleID = () => {
+    return rules.map((r) => r.id).reduce((a, b) => Math.max(a, b), 0) + 1;
+  };
+  const updateRule = (rule: DeclarativeNetRequestRule) => {
+    const newRules = rules.map((r) => (r.id === rule.id ? rule : r));
+    setRules(newRules);
+  };
+  const removeRule = (rule: DeclarativeNetRequestRule) => {
+    const newRules = rules.filter((r) => r.id !== rule.id);
+    setRules(newRules);
+  };
   return (
     <>
       <div>
-        {false && (
-          <RuleConditionForm
-            initialCondition={{
-              urlFilter: "https://example.com",
-              requestDomains: ["example.com"],
-            }}
-            onSubmit={(condition) => {
-              console.log("CONDITION", condition);
-            }}
-          />
-        )}
-        {false && (
-          <RequestMethodForm
-            initialCondition={{ type: "exclude", requestMethods: ["HEAD"] }}
-            onSubmit={(condition) => {
-              console.log("cindition", condition);
-            }}
-          />
-        )}
         <div className="App">
-          <RuleDisplay rule={sampleRule} />
-          <RuleDisplay rule={sampleRule2} />
+          {rules.length === 0 && (
+            <div>
+              <h2>No rules</h2>
+            </div>
+          )}
+          {rules.map((rule) => (
+            <div key={`rule_${rule.id}`} className="rule-wrapper">
+              <RuleDisplay key={rule.id} rule={rule} updateRule={updateRule} />
+              <button
+                key={`remove-button_${rule.id}`}
+                className="remove-button"
+                onClick={() => removeRule(rule)}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              setRules([
+                ...rules,
+                {
+                  id: getNewRuleID(),
+                  priority: 1,
+                  action: {
+                    type: "block",
+                  },
+                  condition: {
+                    urlFilter: "https://example.com",
+                    requestDomains: ["example.com"],
+                  },
+                },
+              ]);
+            }}
+          >
+            Add a Rule
+          </button>
         </div>
       </div>
     </>

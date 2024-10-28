@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import "./RequestMethodForm.css";
 
-interface RequestMethodCondition {
+export type RequestMethodConditionInput = {
   type: "include" | "exclude";
   requestMethods: string[];
-}
+};
 
 const requestMethodsList = [
   "GET",
@@ -16,26 +16,34 @@ const requestMethodsList = [
   "HEAD",
 ];
 
-export const RequestMethodForm = (props: {
-  initialCondition: RequestMethodCondition;
-  onSubmit: (condition: RequestMethodCondition) => void;
-}) => {
-  const [condition, setCondition] = useState<RequestMethodCondition>(
-    props.initialCondition
-  );
+interface RequestMethodFormProps {
+  initialCondition: RequestMethodConditionInput;
+  onChange: (condition: RequestMethodConditionInput) => void;
+}
+
+export const RequestMethodForm = ({
+  initialCondition,
+  onChange,
+}: RequestMethodFormProps) => {
+  const [condition, setCondition] =
+    useState<RequestMethodConditionInput>(initialCondition);
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCondition({
+    const newCondition = {
       ...condition,
       type: e.target.value as "include" | "exclude",
-    });
+    };
+    setCondition(newCondition);
+    onChange(newCondition);
   };
 
   const handleRequestMethodChange = (method: string) => {
     const updatedMethods = condition.requestMethods.includes(method)
       ? condition.requestMethods.filter((m) => m !== method)
       : [...condition.requestMethods, method];
-    setCondition({ ...condition, requestMethods: updatedMethods });
+    const newCondition = { ...condition, requestMethods: updatedMethods };
+    setCondition(newCondition);
+    onChange(newCondition);
   };
 
   return (
@@ -77,9 +85,6 @@ export const RequestMethodForm = (props: {
           ))}
         </div>
       </div>
-      <button type="submit" className="submit-button">
-        Submit
-      </button>
     </>
   );
 };
