@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./RequestDomainInput.css";
 
 const isValidDomain = (domain: string) => {
@@ -6,11 +6,16 @@ const isValidDomain = (domain: string) => {
   return domainPattern.test(domain);
 };
 
-export const RequestDomainInput = (props: {
+interface RequestDomainInputProps {
   initialDomains: string[];
-  onSubmit: (domains: string[]) => void;
-}) => {
-  const [domains, setDomains] = useState<string[]>([]);
+  onChange: (domains: string[]) => void;
+}
+
+export const RequestDomainInput = ({
+  initialDomains,
+  onChange,
+}: RequestDomainInputProps) => {
+  const [domains, setDomains] = useState<string[]>(initialDomains);
   const [newDomain, setNewDomain] = useState<string>("");
   const [error, setError] = useState<string>("");
 
@@ -19,6 +24,7 @@ export const RequestDomainInput = (props: {
       setDomains([...domains, newDomain]);
       setNewDomain("");
       setError("");
+      onChange([...domains, newDomain]);
     } else {
       setError("Invalid domain");
     }
@@ -28,6 +34,7 @@ export const RequestDomainInput = (props: {
     console.trace("handleRemoveDomain");
     const updatedDomains = domains.filter((_, i) => i !== index);
     setDomains(updatedDomains);
+    onChange(updatedDomains);
   };
 
   return (

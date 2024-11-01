@@ -21,8 +21,10 @@ export const RequestURLFilterInput = ({
   const [inputType, setInputType] = useState<FilterType>(
     initialCondition.filterType
   );
-  const [inputValue, setInputValue] = useState<string>("");
-  const [isCaseSensitive, setIsCaseSensitive] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>(initialCondition.filter);
+  const [isCaseSensitive, setIsCaseSensitive] = useState<boolean>(
+    initialCondition.isCaseSensitive
+  );
 
   const handleInputTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputType(e.target.value as "urlFilter" | "regexFilter");

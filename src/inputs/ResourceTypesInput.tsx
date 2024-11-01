@@ -1,37 +1,30 @@
 import React, { useState } from "react";
 import "./ResourceTypesInput.css";
+import { ResourceTypesList } from "../types/ResourceTypes";
 
 interface ResourceTypesCondition {
   type: "include" | "exclude";
   resourceTypes: string[];
 }
 
-const resourceTypesList = [
-  "main_frame",
-  "sub_frame",
-  "stylesheet",
-  "script",
-  "image",
-  "font",
-  "object",
-  "xmlhttprequest",
-  "ping",
-  "csp_report",
-  "media",
-  "websocket",
-  "other",
-];
-
-export const ResourceTypesInput = (props: {
+interface ResourceTypesInputProps {
   initialCondition: ResourceTypesCondition;
-  onSubmit: (condition: ResourceTypesCondition) => void;
-}) => {
-  const [condition, setCondition] = useState<ResourceTypesCondition>(
-    props.initialCondition
-  );
+  onChange: (condition: ResourceTypesCondition) => void;
+}
+
+export const ResourceTypesInput = ({
+  initialCondition,
+  onChange,
+}: ResourceTypesInputProps) => {
+  const [condition, setCondition] =
+    useState<ResourceTypesCondition>(initialCondition);
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCondition({
+      ...condition,
+      type: e.target.value as "include" | "exclude",
+    });
+    onChange({
       ...condition,
       type: e.target.value as "include" | "exclude",
     });
@@ -42,6 +35,17 @@ export const ResourceTypesInput = (props: {
       ? condition.resourceTypes.filter((t) => t !== type)
       : [...condition.resourceTypes, type];
     setCondition({ ...condition, resourceTypes: updatedTypes });
+    onChange({ ...condition, resourceTypes: updatedTypes });
+  };
+
+  const selectAll = () => {
+    setCondition({ ...condition, resourceTypes: ResourceTypesList });
+    onChange({ ...condition, resourceTypes: ResourceTypesList });
+  };
+
+  const selectNone = () => {
+    setCondition({ ...condition, resourceTypes: [] });
+    onChange({ ...condition, resourceTypes: [] });
   };
 
   return (
@@ -69,9 +73,12 @@ export const ResourceTypesInput = (props: {
         </label>
       </div>
       <div className="form-group">
-        <label>Resource Types:</label>
+        <label>
+          Resource Types: <a onClick={() => selectAll()}>(all)</a>{" "}
+          <a onClick={() => selectNone()}>(none)</a>
+        </label>
         <div className="checkbox-group">
-          {resourceTypesList.map((type) => (
+          {ResourceTypesList.map((type) => (
             <label key={type} className="checkbox-label">
               <input
                 type="checkbox"
@@ -83,9 +90,6 @@ export const ResourceTypesInput = (props: {
           ))}
         </div>
       </div>
-      <button type="submit" className="submit-button">
-        Submit
-      </button>
     </>
   );
 };

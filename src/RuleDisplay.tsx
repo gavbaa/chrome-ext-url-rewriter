@@ -16,6 +16,7 @@ import { RequestDomainInput } from "./inputs/RequestDomainInput";
 import "./RuleDisplay.css";
 import { EditIcon } from "./EditIcon";
 import { RequestURLFilterInput } from "./inputs/RequestURLFilterInput";
+import { ResourceTypesList } from "./types/ResourceTypes";
 
 interface RuleDisplayProps {
   rule: DeclarativeNetRequestRule;
@@ -148,7 +149,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 ? currentRule.condition.excludedResourceTypes
                 : currentRule.condition.resourceTypes || [],
             }}
-            onSubmit={(condition) => {
+            onChange={(condition) => {
               if (condition.type === "include") {
                 handleConditionSubmit({
                   resourceTypes: condition.resourceTypes,
@@ -167,7 +168,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
         return (
           <RequestDomainInput
             initialDomains={currentRule.condition.initiatorDomains || []}
-            onSubmit={(domains: string[]) =>
+            onChange={(domains: string[]) =>
               handleConditionSubmit({
                 initiatorDomains: domains,
               })
@@ -180,7 +181,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
             initialDomains={
               currentRule.condition.excludedInitiatorDomains || []
             }
-            onSubmit={(domains: string[]) =>
+            onChange={(domains: string[]) =>
               handleConditionSubmit({
                 excludedInitiatorDomains: domains,
               })
@@ -191,7 +192,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
         return (
           <RequestDomainInput
             initialDomains={currentRule.condition.requestDomains || []}
-            onSubmit={(domains: string[]) =>
+            onChange={(domains: string[]) =>
               handleConditionSubmit({
                 requestDomains: domains,
               })
@@ -202,7 +203,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
         return (
           <RequestDomainInput
             initialDomains={currentRule.condition.excludedRequestDomains || []}
-            onSubmit={(domains: string[]) =>
+            onChange={(domains: string[]) =>
               handleConditionSubmit({
                 excludedRequestDomains: domains,
               })
@@ -238,17 +239,27 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
     currentRule.condition.resourceTypes?.length && (
       <span key="resourceTypes">
         <span className="label">Resource Types:</span>{" "}
-        <span className="value">
-          {currentRule.condition.resourceTypes.join(", ")}
-        </span>
+        {currentRule.condition.resourceTypes.length ===
+        ResourceTypesList.length ? (
+          "(all)"
+        ) : (
+          <span className="value">
+            {currentRule.condition.resourceTypes.join(", ")}
+          </span>
+        )}
       </span>
     ),
     currentRule.condition.excludedResourceTypes?.length && (
       <span key="excludedResourceTypes">
         <span className="label">Excluded Resource Types:</span>{" "}
-        <span className="value">
-          {currentRule.condition.excludedResourceTypes.join(", ")}
-        </span>
+        {currentRule.condition.excludedResourceTypes.length ===
+        ResourceTypesList.length ? (
+          "(all)"
+        ) : (
+          <span className="value">
+            {currentRule.condition.excludedResourceTypes.join(", ")}
+          </span>
+        )}
       </span>
     ),
     currentRule.condition.requestMethods?.length && (
