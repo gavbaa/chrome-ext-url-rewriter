@@ -32,8 +32,10 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
   const [tempCurrentRule, setTempCurrentRule] =
     useState<DeclarativeNetRequestRule>(rule);
   const [conditionType, setConditionType] = useState<string>("");
+  const [saveEnabled, setSaveEnabled] = useState(false);
 
   const handleEditActionClick = () => {
+    setSaveEnabled(false);
     setTempCurrentRule(currentRule);
     setIsActionModalOpen(true);
   };
@@ -44,6 +46,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
   };
 
   const handleActionModalSave = () => {
+    setSaveEnabled(false);
     setCurrentRule(tempCurrentRule);
     updateRule(tempCurrentRule);
     setIsActionModalOpen(false);
@@ -108,6 +111,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 });
               }
             }}
+            setSaveEnabled={setSaveEnabled}
           />
         );
       case "Request Methods":
@@ -136,6 +140,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 });
               }
             }}
+            setSaveEnabled={setSaveEnabled}
           />
         );
       case "Resource Types":
@@ -162,6 +167,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 });
               }
             }}
+            setSaveEnabled={setSaveEnabled}
           />
         );
       case "Initiator Domains":
@@ -173,6 +179,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 initiatorDomains: domains,
               })
             }
+            setSaveEnabled={setSaveEnabled}
           />
         );
       case "Excluded Initiator Domains":
@@ -186,6 +193,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 excludedInitiatorDomains: domains,
               })
             }
+            setSaveEnabled={setSaveEnabled}
           />
         );
       case "Request Domains":
@@ -197,6 +205,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 requestDomains: domains,
               })
             }
+            setSaveEnabled={setSaveEnabled}
           />
         );
       case "Excluded Request Domains":
@@ -208,6 +217,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
                 excludedRequestDomains: domains,
               })
             }
+            setSaveEnabled={setSaveEnabled}
           />
         );
       default:
@@ -489,6 +499,7 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
               <RuleActionInput
                 initialAction={currentRule.action}
                 onActionChange={handleActionRuleInputUpdate}
+                setSaveEnabled={setSaveEnabled}
               />
             </div>
             <div className="dialog-actions">
@@ -500,7 +511,10 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
               </button>
               <button
                 onClick={handleActionModalSave}
-                className="dialog-close-button"
+                className={`dialog-close-button ${
+                  saveEnabled ? "" : "dialog-close-button-disabled"
+                }`}
+                disabled={!saveEnabled}
               >
                 Save
               </button>
@@ -530,7 +544,10 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
               </button>
               <button
                 onClick={handleConditionModalSave}
-                className="dialog-close-button"
+                className={`dialog-close-button ${
+                  saveEnabled ? "" : "dialog-close-button-disabled"
+                }`}
+                disabled={!saveEnabled}
               >
                 Save
               </button>

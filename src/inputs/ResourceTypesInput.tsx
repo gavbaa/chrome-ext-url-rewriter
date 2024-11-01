@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./ResourceTypesInput.css";
 import { ResourceTypesList } from "../types/ResourceTypes";
 
@@ -10,14 +10,20 @@ interface ResourceTypesCondition {
 interface ResourceTypesInputProps {
   initialCondition: ResourceTypesCondition;
   onChange: (condition: ResourceTypesCondition) => void;
+  setSaveEnabled: (enabled: boolean) => void;
 }
 
 export const ResourceTypesInput = ({
   initialCondition,
   onChange,
+  setSaveEnabled,
 }: ResourceTypesInputProps) => {
   const [condition, setCondition] =
     useState<ResourceTypesCondition>(initialCondition);
+
+  useEffect(() => {
+    setSaveEnabled(condition.resourceTypes.length > 0);
+  }, []);
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCondition({
@@ -28,6 +34,7 @@ export const ResourceTypesInput = ({
       ...condition,
       type: e.target.value as "include" | "exclude",
     });
+    setSaveEnabled(condition.resourceTypes.length > 0);
   };
 
   const handleResourceTypeChange = (type: string) => {
@@ -36,16 +43,19 @@ export const ResourceTypesInput = ({
       : [...condition.resourceTypes, type];
     setCondition({ ...condition, resourceTypes: updatedTypes });
     onChange({ ...condition, resourceTypes: updatedTypes });
+    setSaveEnabled(updatedTypes.length > 0);
   };
 
   const selectAll = () => {
     setCondition({ ...condition, resourceTypes: ResourceTypesList });
     onChange({ ...condition, resourceTypes: ResourceTypesList });
+    setSaveEnabled(true);
   };
 
   const selectNone = () => {
     setCondition({ ...condition, resourceTypes: [] });
     onChange({ ...condition, resourceTypes: [] });
+    setSaveEnabled(false);
   };
 
   return (

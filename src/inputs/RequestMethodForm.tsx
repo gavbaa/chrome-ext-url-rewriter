@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./RequestMethodForm.css";
 
 export type RequestMethodConditionInput = {
@@ -19,14 +19,20 @@ const requestMethodsList = [
 interface RequestMethodFormProps {
   initialCondition: RequestMethodConditionInput;
   onChange: (condition: RequestMethodConditionInput) => void;
+  setSaveEnabled: (enabled: boolean) => void;
 }
 
 export const RequestMethodForm = ({
   initialCondition,
   onChange,
+  setSaveEnabled,
 }: RequestMethodFormProps) => {
   const [condition, setCondition] =
     useState<RequestMethodConditionInput>(initialCondition);
+
+  useEffect(() => {
+    setSaveEnabled(true);
+  }, []);
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newCondition = {

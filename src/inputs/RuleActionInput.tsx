@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DnrRuleAction, ModifyHeaderInfo } from "../types/DnrRuleAction";
 import { RuleActionHeaderInput } from "./RuleActionHeaderInput";
 
 interface RuleActionInputProps {
   initialAction: DnrRuleAction;
   onActionChange: (action: DnrRuleAction) => void;
+  setSaveEnabled: (enabled: boolean) => void;
 }
 
 export const RuleActionInput: React.FC<RuleActionInputProps> = ({
   initialAction,
   onActionChange,
+  setSaveEnabled,
 }) => {
   const [action, setAction] = useState<DnrRuleAction>(initialAction);
+
+  useEffect(() => {
+    setSaveEnabled(true);
+  }, []);
 
   const handleHeaderChange = (headers: ModifyHeaderInfo[]) => {
     const newAction = { ...action, requestHeaders: headers };
@@ -66,6 +72,7 @@ export const RuleActionInput: React.FC<RuleActionInputProps> = ({
           <RuleActionHeaderInput
             initialHeaders={action.requestHeaders || []}
             onHeaderChange={handleHeaderChange}
+            setSaveEnabled={setSaveEnabled}
           />
         </div>
       )}

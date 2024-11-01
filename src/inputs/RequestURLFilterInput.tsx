@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./RequestURLFilterInput.css";
 
 type FilterType = "urlFilter" | "regexFilter";
@@ -12,11 +12,13 @@ export type URLFilterConditionInput = {
 interface RequestURLFilterInputProps {
   initialCondition: URLFilterConditionInput;
   onChange: (changed: URLFilterConditionInput) => void;
+  setSaveEnabled: (enabled: boolean) => void;
 }
 
 export const RequestURLFilterInput = ({
   initialCondition,
   onChange,
+  setSaveEnabled,
 }: RequestURLFilterInputProps) => {
   const [inputType, setInputType] = useState<FilterType>(
     initialCondition.filterType
@@ -26,6 +28,10 @@ export const RequestURLFilterInput = ({
     initialCondition.isCaseSensitive
   );
 
+  useEffect(() => {
+    setSaveEnabled(inputValue.length > 0);
+  }, []);
+
   const handleInputTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputType(e.target.value as "urlFilter" | "regexFilter");
     onChange({
@@ -33,6 +39,7 @@ export const RequestURLFilterInput = ({
       filter: inputValue,
       isCaseSensitive,
     });
+    setSaveEnabled(inputValue.length > 0);
   };
 
   const handleInputValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +49,7 @@ export const RequestURLFilterInput = ({
       filter: e.target.value,
       isCaseSensitive,
     });
+    setSaveEnabled(e.target.value.length > 0);
   };
 
   const handleCaseSensitiveChange = (
@@ -53,6 +61,7 @@ export const RequestURLFilterInput = ({
       filter: inputValue,
       isCaseSensitive: e.target.checked,
     });
+    setSaveEnabled(inputValue.length > 0);
   };
 
   return (

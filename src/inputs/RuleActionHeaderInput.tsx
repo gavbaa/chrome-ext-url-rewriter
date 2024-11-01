@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./RuleActionHeaderInput.css";
 import { ModifyHeaderInfo } from "../types/DnrRuleAction";
 
 interface RuleActionHeaderInputProps {
   initialHeaders: ModifyHeaderInfo[];
   onHeaderChange: (headers: ModifyHeaderInfo[]) => void;
+  setSaveEnabled: (enabled: boolean) => void;
 }
 
 export const RuleActionHeaderInput: React.FC<RuleActionHeaderInputProps> = ({
   initialHeaders,
   onHeaderChange,
+  setSaveEnabled,
 }) => {
   const [headers, setHeaders] = useState<ModifyHeaderInfo[]>(initialHeaders);
+
+  useEffect(() => {
+    setSaveEnabled(true);
+  }, []);
 
   const handleHeaderChange = (
     index: number,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./RequestDomainInput.css";
 
 const isValidDomain = (domain: string) => {
@@ -9,15 +9,21 @@ const isValidDomain = (domain: string) => {
 interface RequestDomainInputProps {
   initialDomains: string[];
   onChange: (domains: string[]) => void;
+  setSaveEnabled: (enabled: boolean) => void;
 }
 
 export const RequestDomainInput = ({
   initialDomains,
   onChange,
+  setSaveEnabled,
 }: RequestDomainInputProps) => {
   const [domains, setDomains] = useState<string[]>(initialDomains);
   const [newDomain, setNewDomain] = useState<string>("");
   const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    setSaveEnabled(true);
+  }, []);
 
   const handleAddDomain = () => {
     if (isValidDomain(newDomain)) {
