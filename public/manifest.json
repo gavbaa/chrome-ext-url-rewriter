@@ -1,5 +1,5 @@
 {
-  "name": "SQSP Rewriter",
+  "name": "Request Rewriter",
   "version": "0.1",
   "manifest_version": 3,
   "description": "Rewrite requests and headers.",
@@ -8,5 +8,14 @@
   "options_ui": {
     "page": "index.html",
     "open_in_tab": true
+  },
+  "action": {
+    "default_icon": {
+      "32": "icon32.png"
+    },
+    "default_title": "Request Rewriter"
+  },
+  "background": {
+    "service_worker": "background.js"
   }
 }
