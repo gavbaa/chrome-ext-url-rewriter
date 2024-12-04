@@ -1,0 +1,26 @@
+.rule-action-input input,
+.rule-action-input select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.rule-action-input label {
+  display: inline-block;
+  width: 10em;
+}
+
+.rule-action-input div {
+  margin-bottom: 1em;
+}
+
+.rule-action-replacement {
+  margin-bottom: 1em;
+}
+
+.rule-action-redirect {
+  display: flex;
+}
+
+.rule-action-redirect > input {
+  flex: 1;
+}

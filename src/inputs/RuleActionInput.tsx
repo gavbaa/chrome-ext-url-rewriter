@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { DnrRuleAction, ModifyHeaderInfo } from "../types/DnrRuleAction";
+import "./RuleActionInput.css";
+import { DnrRuleAction, ModifyHeaderInfo, Redirect } from "../types/DnrRuleAction";
 import { RuleActionHeaderInput } from "./RuleActionHeaderInput";
 
 interface RuleActionInputProps {
@@ -8,12 +9,17 @@ interface RuleActionInputProps {
   setSaveEnabled: (enabled: boolean) => void;
 }
 
+const ReplacementTypeURL = "url";
+const ReplacementTypeRegex = "regex";
+
 export const RuleActionInput: React.FC<RuleActionInputProps> = ({
   initialAction,
   onActionChange,
   setSaveEnabled,
 }) => {
   const [action, setAction] = useState<DnrRuleAction>(initialAction);
+  const [replacementType, setReplacementType] = useState<string>(initialAction.redirect?.regexSubstitution ? ReplacementTypeRegex : ReplacementTypeURL);
+  const [redirectValue, setRedirectValue] = useState<string>(initialAction.redirect?.regexSubstitution ?? initialAction.redirect?.url ?? "");
 
   useEffect(() => {
     setSaveEnabled(true);
@@ -25,9 +31,26 @@ export const RuleActionInput: React.FC<RuleActionInputProps> = ({
     onActionChange(newAction);
   };
 
+  useEffect(() => {
+    let redirect: Redirect;
+    if (replacementType == ReplacementTypeRegex) {
+      redirect = { regexSubstitution: redirectValue };
+    }
+    else {
+      redirect = { url: redirectValue };
+    }
+    
+    const newAction = {
+      ...action,
+      redirect,
+    };
+    setAction(newAction);
+    onActionChange(newAction);
+  }, [replacementType, redirectValue]);
+
   return (
-    <>
-      <div>
+    <div className="rule-action-input">
+      <div className="rule-action-type">
         <label>Action Type:</label>
         <select
           value={action.type}
@@ -50,24 +73,33 @@ export const RuleActionInput: React.FC<RuleActionInputProps> = ({
 
       {action.type === "redirect" && (
         <div>
-          <label>Redirect URL:</label>
-          <input
-            type="text"
-            value={action.redirect?.url || ""}
-            onChange={(e) => {
-              const newAction = {
-                ...action,
-                redirect: { ...action.redirect, url: e.target.value },
-              };
-              setAction(newAction);
-              onActionChange(newAction);
-            }}
-          />
+          <div className="rule-action-replacement">
+            <label>Replacement Type:</label>
+            <select
+              value={replacementType}
+              onChange={(e) => {
+                setReplacementType(e.target.value);
+              }}
+                >
+              <option value={ReplacementTypeURL}>Plain URL</option>
+              <option value={ReplacementTypeRegex}>Regex Substitution</option>
+            </select>
+            </div>
+            <div className="rule-action-redirect">
+            <label>Redirect URL:</label>
+            <input
+              type="text"
+              value={redirectValue}
+              onChange={(e) => {
+                setRedirectValue(e.target.value);
+              }}
+            />
+          </div>
         </div>
       )}
 
       {action.type === "modifyHeaders" && (
-        <div>
+        <div className="rule-action-modify-headers">
           <label>Modify Headers:</label>
           <RuleActionHeaderInput
             initialHeaders={action.requestHeaders || []}
@@ -76,7 +108,7 @@ export const RuleActionInput: React.FC<RuleActionInputProps> = ({
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

@@ -18,14 +18,14 @@ function App() {
             rules.map((r) => {
               return {
                 ...r,
-                condition: {
-                  ...r.condition,
-                  resourceTypes:
-                    r.condition.resourceTypes?.length ==
-                    ResourceTypesList.length
-                      ? []
-                      : r.condition.resourceTypes,
-                },
+                // condition: {
+                //   ...r.condition,
+                //   resourceTypes:
+                //     r.condition.resourceTypes?.length ==
+                //     ResourceTypesList.length
+                //       ? []
+                //       : r.condition.resourceTypes,
+                // },
               };
             })
           );

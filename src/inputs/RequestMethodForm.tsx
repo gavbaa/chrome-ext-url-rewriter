@@ -7,13 +7,13 @@ export type RequestMethodConditionInput = {
 };
 
 const requestMethodsList = [
-  "GET",
-  "POST",
-  "PUT",
-  "DELETE",
-  "PATCH",
-  "OPTIONS",
-  "HEAD",
+  "get",
+  "post",
+  "put",
+  "delete",
+  "patch",
+  "options",
+  "head",
 ];
 
 interface RequestMethodFormProps {
@@ -86,7 +86,7 @@ export const RequestMethodForm = ({
                 checked={condition.requestMethods.includes(method)}
                 onChange={() => handleRequestMethodChange(method)}
               />
-              {method}
+              {method.toUpperCase()}
             </label>
           ))}
         </div>

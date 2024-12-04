@@ -328,10 +328,10 @@ const RuleDisplay: React.FC<RuleDisplayProps> = ({ rule, updateRule }) => {
       <span className="value">{currentRule.action.type}</span>
     </span>,
     currentRule.action.type === "redirect" &&
-      currentRule.action.redirect?.url && (
+      (currentRule.action.redirect?.url || currentRule.action.redirect?.regexSubstitution) && (
         <span key="redirectUrl">
-          <span className="label">Redirect URL:</span>{" "}
-          <span className="value">{currentRule.action.redirect.url}</span>
+          <span className="label">Redirect {currentRule.action.redirect.regexSubstitution ? "Regex" : "URL"}:</span>{" "}
+          <span className="value">{currentRule.action.redirect.regexSubstitution ?? currentRule.action.redirect.url}</span>
         </span>
       ),
     currentRule.action.type === "modifyHeaders" &&

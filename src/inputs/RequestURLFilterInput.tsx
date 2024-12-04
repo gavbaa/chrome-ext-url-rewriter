@@ -78,7 +78,7 @@ export const RequestURLFilterInput = ({
           />
           URL Filter
           <a
-            href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#property-RuleCondition-urlFilter"
+            href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#url_filter_syntax"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -95,7 +95,7 @@ export const RequestURLFilterInput = ({
           />
           Regex Filter
           <a
-            href="https://developer.chrome.com/docs/extensions/reference/declarativeNetRequest/#type-RuleCondition"
+            href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#property-RuleCondition-regexFilter"
             target="_blank"
             rel="noopener noreferrer"
           >
